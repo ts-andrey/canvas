@@ -1,23 +1,41 @@
 import { RandomCircle } from './objects/RandomCircle';
 import { generateObjectsArray } from './util/helpers';
-import { browser } from './util/variables';
+import { browserSize, mouseCoords } from './util/variables';
 
 import './sass/style.scss';
 
 export const canvas = document.createElement('canvas');
 export const context = canvas.getContext('2d');
 
-canvas.width = browser.width;
-canvas.height = browser.height;
+canvas.width = browserSize.width;
+canvas.height = browserSize.height;
 
 const body = document.getElementById('body');
 body.insertAdjacentElement('afterbegin', canvas);
 
-const circleArr = generateObjectsArray(RandomCircle, 200);
+canvas.addEventListener('mousemove', event => {
+  mouseCoords.x = event.x;
+  mouseCoords.y = event.y;
+});
+
+const circleArr = [];
+const init = () => {
+  circleArr.length = 0;
+  generateObjectsArray(circleArr, RandomCircle, 500);
+};
+init();
 
 export const animate = () => {
   requestAnimationFrame(animate);
-  context.clearRect(0, 0, browser.width, browser.height);
+  context.clearRect(0, 0, browserSize.width, browserSize.height);
 
-  circleArr.forEach(el => el.draw());
+  circleArr.forEach(el => el.update());
 };
+
+window.addEventListener('resize', event => {
+  browserSize.height = event.target.innerHeight;
+  browserSize.width = event.target.innerWidth;
+  canvas.width = browserSize.width;
+  canvas.height = browserSize.height;
+  init();
+});
